@@ -42,6 +42,14 @@ async function run() {
 
     })
 
+    // see category books
+    app.get("/books/:category", async(req,res) =>{
+      const category = req.params.category;
+      const query = { category : category};
+      const result = await booksCollection.find(query).toArray();
+      res.send(result);
+    })
+
     // see updated book details
     app.get("/update-book/:id", async(req,res) =>{
       const id = req.params.id;
