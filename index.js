@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 3000;
 const cors =require('cors');
 const app = express();
@@ -26,6 +26,44 @@ async function run() {
     await client.connect();
 
     const booksCollection = client.db("bookDB").collection("books");
+    const borrowedBooksCollection = client.db("bookDB").collection("borrowedBooksCollection");
+
+    // update book details
+    app.put("/update-book/:id" , async(req,res) =>{
+      const id = req.params.id;
+      const filter = { _id : new ObjectId(id)};
+      const options = {upsert : true};
+      const updatedBook = req.body;
+      const updatedDoc = {
+        $set : updatedBook
+      }
+      const result = await booksCollection.updateOne(filter, updatedDoc, options);
+      res.send(result);
+
+    })
+
+    // see updated book details
+    app.get("/update-book/:id", async(req,res) =>{
+      const id = req.params.id;
+      const query = { _id : new ObjectId(id)};
+      const result = await booksCollection.findOne(query);
+      res.send(result);
+
+    })
+
+    // send borrowed book to database
+    app.post("/borrowed-books" , async (req,res) => {
+      const book = req.body;
+      const result = await borrowedBooksCollection.insertOne(book);
+      res.send(result);
+    })
+
+    // see borrowed books in server
+
+    app.get("/borrowed-books" , async (req,res) =>{
+      const result = await borrowedBooksCollection.find().toArray();
+      res.send(result);
+    })
 
     // Add books related API
     app.post("/books", async(req,res) =>{
@@ -44,6 +82,15 @@ async function run() {
 
 
     // get api
+
+    // book details API
+
+    app.get("/book-details/:id" , async(req,res) =>{
+      const id = req.params.id;
+      const query = { _id : new ObjectId(id) };
+      const result = await booksCollection.findOne(query);
+      res.send(result);
+    })
 
     app.get("/books", async (req,res) =>{
         const result = await booksCollection.find().toArray();
