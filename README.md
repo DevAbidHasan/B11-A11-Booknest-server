@@ -85,14 +85,12 @@ DELETE /books/:id
 ```
 
 Delete a book by ID.
-
 🔹 Borrowed Books
 ```
 GET /borrowed-books
 POST /borrowed-books
 DELETE /borrowed-books/:id
 ```
-
 Endpoints for managing borrowed books.
 ---
 ### 🏗 Project Structure
